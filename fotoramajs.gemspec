@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.summary     = 'Fotorama is a simple, stunning, powerful JavaScript gallery.'
   s.description = 'Fotorama is a simple, stunning, powerful JavaScript ' +
                   'gallery.  This is a gem, that allow you to simple install ' +
-                  'and maintain Fotorama in Rails Assets Pipeline.' +
+                  'and maintain Fotorama in Rails Assets Pipeline. ' +
                   'Note, that Fotorama is a closed source commercial project.'
 
   s.add_dependency 'sprockets',    '>= 2'
