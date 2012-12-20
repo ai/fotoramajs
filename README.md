@@ -5,12 +5,11 @@
 This is packager, that allows you to simply install and maintain Fotorama
 by RubyGem in Rails Assets Pipeline.
 
-Note, that Fotorama is a [commercial] product and requires $33 per domain name.
-Non-commercial and personal use of Fotorama is typically free,
-but is always approved by Fotorama’s author.
+Note, that Fotorama is a [commercial] product ($33 per domain name) and is not
+an open-source software project. Non‑commercial and personal use of Fotorama
+is typically free, but is always approved by Fotorama’s author.
 
 Fotorama is created and maintained by [Artem Polikarpov].
-It is not an open-source software project.
 
 [Fotorama]:         http://fotoramajs.com/
 [commercial]:       http://fotoramajs.com/license/
