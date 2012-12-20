@@ -4,19 +4,20 @@ desc 'Create gem for Rails'
 task :gem => :clobber do
   require 'open-uri'
 
-  mkdir_p 'build/lib/assets'
+  mkdir_p 'build/lib/assets/javascripts/'
+  mkdir_p 'build/lib/assets/stylesheets/'
   cp_r    'lib/',               'build/'
   cp_r    'README.md',          'build/'
 
-  %w{css js}.each do |ext|
-    File.open("build/lib/assets/fotorama.#{ext}", 'w') do |save|
+  { css: 'stylesheets', js: 'javascripts' }.each_pair do |ext, dir|
+    File.open("build/lib/assets/#{dir}/fotorama.#{ext}", 'w') do |save|
       open("http://fotoramajs.com/fotorama/fotorama.#{ext}") do |web|
         save << web.read
       end
     end
   end
 
-  line    = File.read('build/lib/assets/fotorama.js').lines.first
+  line    = File.read('build/lib/assets/javascripts/fotorama.js').lines.first
   version = line.match(/Fotorama ([^\s]+) /)[1]
 
   File.open('build/fotoramajs.gemspec', 'w') do |save|
