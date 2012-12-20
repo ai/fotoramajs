@@ -30,14 +30,17 @@ It is not an open-source software project.
    bundle install
    ```
 
-3. Include Fotorama script, for example, in `application.js.coffee`:
+3. Include jQuery to your project. I recommend [jquery-rails-cdn].
+4. Include Fotorama script, for example, in `application.js.coffee`:
 
    ```coffee
    #= require fotorama
    ```
 
-4. Include Fotorama styles, for example, in `application.css.sass`:
+5. Include Fotorama styles, for example, in `application.css.sass`:
 
    ```coffee
    @import 'fotorama'
    ```
+
+[jquery-rails-cdn]: https://github.com/kenn/jquery-rails-cdn

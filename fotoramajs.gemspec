@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
                   'and maintain Fotorama in Rails Assets Pipeline.' +
                   'Note, that Fotorama is a closed source commercial project.'
 
-  s.add_dependency 'sprockets', '>= 2'
+  s.add_dependency 'sprockets',    '>= 2'
+  s.add_dependency 'jquery-rails', '>= 2.1.0'
 
   s.files            = ['lib/assets/javascripts/fotorama.js',
                         'lib/assets/stylesheets/fotorama.css',
