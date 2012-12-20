@@ -2,5 +2,6 @@
 *~
 
 pkg/
+build/
 
 .bundle

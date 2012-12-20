@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'fotoramajs'
-  s.version     = VERSION
+  s.version     = 'VERSION'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Artem Polikarpov']
   s.email       = ['fotoramajs@gmail.com']
@@ -14,7 +14,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'sprockets', '>= 2'
 
-  s.files            = ['lib/fotoramajs.rb', 'README.md']
+  s.files            = ['lib/assets/fotorama.js', 'lib/assets/fotorama.css',
+                        'lib/fotoramajs.rb', 'README.md']
   s.extra_rdoc_files = ['README.md']
   s.require_path     = 'lib'
 end
