@@ -6,7 +6,7 @@ task :gem => :clobber do
 
   mkdir_p 'build/lib/assets/javascripts/'
   mkdir_p 'build/lib/assets/stylesheets/'
-  cp_r    'lib/',               'build/'
+  cp_r    'fotoramajs.rb',      'build/lib/'
   cp_r    'README.md',          'build/'
 
   { css: 'stylesheets', js: 'javascripts' }.each_pair do |ext, dir|
@@ -27,10 +27,10 @@ task :gem => :clobber do
   cd 'build/'
   sh 'gem build fotoramajs.gemspec'
 
-  cd '..'
+  cd    '..'
   mkdir 'pkg'
-  cp "build/fotoramajs-#{version}.gem", 'pkg'
-  rm_r 'build'
+  cp    "build/fotoramajs-#{version}.gem", 'pkg'
+  rm_r  'build'
 end
 
 desc 'Remove temporary files'
