@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Artem Polikarpov']
   s.email       = ['fotoramajs@gmail.com']
+  s.license     = 'MIT'
   s.homepage    = 'http://fotoramajs.com/'
   s.summary     = 'Fotorama is a simple, stunning, powerful JavaScript gallery.'
   s.description = 'Fotorama is a simple, stunning, powerful JavaScript ' +
