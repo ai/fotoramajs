@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "httpclient", "~> 2.2"
   s.add_development_dependency "thor"
 
-  s.files         = `git ls-files`.split($/)
+  s.files         = `git ls-files`.split("\n")
   s.require_path  = 'lib'
 end
