@@ -1,12 +1,17 @@
 #!/usr/bin/env rake
-require "bundler/gem_tasks"
-require File.expand_path('../lib/fotoramajs/source_file', __FILE__)
 
-desc "Update with Artem Polikarpov's fotorama Library"
+require "bundler/gem_tasks"
+
+desc "Update assets from Fotorama repo"
 task :update do
-  files = SourceFile.new
+  require File.expand_path('../lib/fotoramajs/updater', __FILE__)
+  files = Updater.new
+
+  puts "Fetching"
   files.fetch
+
+  puts "Coverting"
   files.convert
 
-  puts "Update finished. Please, don't forget to update the gem version in gemspec."
+  puts "Updated"
 end
