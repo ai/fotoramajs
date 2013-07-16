@@ -1,40 +1,12 @@
-# encoding: utf-8
+#!/usr/bin/env rake
+require "bundler/gem_tasks"
+require File.expand_path('../lib/fotoramajs/source_file', __FILE__)
 
-desc 'Create gem for Rails'
-task :gem => :clobber do
-  require 'open-uri'
+desc "Update with Artem Polikarpov's fotorama Library"
+task :update do
+  files = SourceFile.new
+  files.fetch
+  files.convert
 
-  mkdir_p 'build/lib/assets/javascripts/'
-  mkdir_p 'build/lib/assets/stylesheets/'
-  cp_r    'fotoramajs.rb',      'build/lib/'
-  cp_r    'README.md',          'build/'
-
-  { css: 'stylesheets', js: 'javascripts' }.each_pair do |ext, dir|
-    File.open("build/lib/assets/#{dir}/fotorama.#{ext}", 'w') do |save|
-      open("http://fotoramajs.com/fotorama/fotorama.#{ext}") do |web|
-        save << web.read
-      end
-    end
-  end
-
-  line    = File.read('build/lib/assets/javascripts/fotorama.js').lines.first
-  version = line.match(/Fotorama ([^\s]+) /)[1]
-
-  File.open('build/fotoramajs.gemspec', 'w') do |save|
-    save << File.read('fotoramajs.gemspec').sub('VERSION', version)
-  end
-
-  cd 'build/'
-  sh 'gem build fotoramajs.gemspec'
-
-  cd    '..'
-  mkdir 'pkg'
-  cp    "build/fotoramajs-#{version}.gem", 'pkg'
-  rm_r  'build'
-end
-
-desc 'Remove temporary files'
-task :clobber do
-  rm_r 'build' rescue nil
-  rm_r 'pkg'   rescue nil
+  puts "Update finished. Please, don't forget to update the gem version in gemspec."
 end
