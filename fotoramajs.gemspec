@@ -1,7 +1,6 @@
 # encoding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'fotoramajs/version'
+
+require './lib/fotoramajs/version'
 
 Gem::Specification.new do |s|
   s.name        = 'fotoramajs'
@@ -10,12 +9,11 @@ Gem::Specification.new do |s|
   s.authors     = ['Artem Polikarpov']
   s.email       = ['fotoramajs@gmail.com']
   s.license     = 'MIT'
-  s.homepage    = 'http://fotoramajs.com/'
+  s.homepage    = 'http://fotorama.io/'
   s.summary     = 'Fotorama is a simple, stunning, powerful JavaScript gallery.'
   s.description = 'Fotorama is a simple, stunning, powerful JavaScript ' +
                   'gallery.  This is a gem, that allow you to simple install ' +
-                  'and maintain Fotorama in Rails Assets Pipeline. ' +
-                  'Note, that Fotorama is a closed source commercial project.'
+                  'and maintain Fotorama in Rails Assets Pipeline.'
 
   s.add_dependency 'sprockets',    '>= 2'
   s.add_dependency 'jquery-rails', '>= 2.1.0'
