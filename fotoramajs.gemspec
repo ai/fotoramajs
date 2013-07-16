@@ -1,8 +1,11 @@
 # encoding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'fotoramajs/version'
 
 Gem::Specification.new do |s|
   s.name        = 'fotoramajs'
-  s.version     = '4.1.17'
+  s.version     = Fotoramajs::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Artem Polikarpov']
   s.email       = ['fotoramajs@gmail.com']

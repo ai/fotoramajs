@@ -19,6 +19,11 @@ class SourceFile < Thor
     %w(fotorama.png fotorama@2x.png).each do |img|
       get "#{remote}/#{img}", "images/#{img}"
     end
+
+    self.destination_root = ""
+    create_file "lib/fotoramajs/version.rb" do
+      "module Fotoramajs\n  VERSION = \"#{tag}\"\nend"
+    end
   end
 
   desc "convert css to scss file", "convert css to scss file"
