@@ -1,8 +1,11 @@
 # encoding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'fotoramajs/version'
 
 Gem::Specification.new do |s|
   s.name        = 'fotoramajs'
-  s.version     = 'VERSION'
+  s.version     = Fotoramajs::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Artem Polikarpov']
   s.email       = ['fotoramajs@gmail.com']
@@ -16,9 +19,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'sprockets',    '>= 2'
   s.add_dependency 'jquery-rails', '>= 2.1.0'
 
-  s.files            = ['lib/assets/javascripts/fotorama.js',
-                        'lib/assets/stylesheets/fotorama.css',
-                        'lib/fotoramajs.rb', 'README.md']
-  s.extra_rdoc_files = ['README.md']
-  s.require_path     = 'lib'
+  s.add_development_dependency "httpclient", "~> 2.2"
+  s.add_development_dependency "thor"
+
+  s.files         = `git ls-files`.split($/)
+  s.require_path  = 'lib'
 end

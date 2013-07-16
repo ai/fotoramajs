@@ -41,3 +41,7 @@ Fotorama is created and maintained by [Artem Polikarpov].
 
 [jquery-rails-cdn]: https://github.com/kenn/jquery-rails-cdn
 [documentation]:    http://fotoramajs.com/set-up/
+
+## Development
+
+To update original library, you can use `rake update` task.
