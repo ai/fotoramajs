@@ -2,7 +2,9 @@
 module Fotoramajs
   class Railtie < Rails::Railtie
     initializer 'fotorama.config' do |app|
-      app.config.assets.precompile += ['fotorama.png', 'fotorama@2x.png']
+      if Gem::Version.new(::Rails.version) >= Gem::Version.new("4.0.0")
+        app.config.assets.precompile += ['fotorama.png', 'fotorama@2x.png']
+      end
     end
   end
 
