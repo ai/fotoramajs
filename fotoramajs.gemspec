@@ -18,9 +18,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'sprockets',    '>= 2'
   s.add_dependency 'jquery-rails', '>= 2.1.0'
 
-  s.add_development_dependency "httpclient", "~> 2.2"
-  s.add_development_dependency "thor"
-
   s.files         = `git ls-files`.split("\n")
   s.require_path  = 'lib'
 end

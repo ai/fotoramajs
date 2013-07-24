@@ -56,5 +56,4 @@ PLATFORMS
 
 DEPENDENCIES
   fotoramajs!
-  httpclient (~> 2.2)
-  thor
+  httpclient

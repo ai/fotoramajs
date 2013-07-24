@@ -1,49 +1,77 @@
-require "thor"
 require "json"
 require "httpclient"
 
-class Updater < Thor
-  REPO = "artpolikarpov/fotorama"
-  include Thor::Actions
+class Updater
+  def self.update
+    instance = new
 
-  desc "fetch source files", "fetch source files from GitHub"
-  def fetch
-    tag = fetch_tags.last
-    self.destination_root = "vendor/assets"
+    puts "Fetching tags"
+    tag = instance.github_tags('artpolikarpov/fotorama').last
 
-    remote = "http://fotorama.s3.amazonaws.com/#{tag}"
-    get "#{remote}/fotorama.css", "stylesheets/fotorama.css"
-    get "#{remote}/fotorama.js", "javascripts/fotorama.js"
+    puts "Load Fotorama #{tag}"
+    instance.fetch(tag)
 
-    %w(fotorama.png fotorama@2x.png).each do |img|
-      get "#{remote}/#{img}", "images/#{img}"
-    end
+    puts "Convert CSS to SCSS"
+    instance.convert
 
-    self.destination_root = ""
-    create_file "lib/fotoramajs/version.rb" do
-      "module Fotoramajs\n  VERSION = \"#{tag}\"\nend"
+    puts "Update gem version"
+    instance.update_version(tag)
+
+    puts "Done."
+  end
+
+  def fetch(tag)
+    cdn = "http://fotorama.s3.amazonaws.com/#{tag}"
+    %w(fotorama.js fotorama.css fotorama.png fotorama@2x.png).each do |file|
+      get "#{cdn}/#{file}", asset(file)
     end
   end
 
-  desc "convert css to scss file", "convert css to scss file"
+  def update_version(tag)
+    version_file.open('w') do |io|
+      io << "module Fotoramajs\n  VERSION = \"#{tag}\"\nend\n"
+    end
+  end
+
   def convert
-    self.destination_root = "vendor/assets"
+    css  = asset('fotorama.css')
+    scss = asset('fotorama.css.scss')
 
-    inside destination_root do
-      conveted = "stylesheets/fotorama.css.scss"
-      run("mv stylesheets/fotorama.css #{conveted}")
-      gsub_file conveted, '(fotorama.png)', "('fotorama.png')"
-      gsub_file conveted, '(fotorama@2x.png)', "('fotorama@2x.png')"
-      gsub_file conveted, 'url(', 'image-url('
+    scss.open('w') do |io|
+      io << css.read.gsub(/url\(([^\)]+)\)/, 'image-url("\1")')
+    end
+
+    css.delete
+  end
+
+  def asset(file)
+    @assets ||= Pathname(__FILE__).dirname.join('../../vendor/assets')
+
+    if file.end_with? '.css' or file.end_with? '.scss'
+      @assets.join('stylesheets', file)
+    elsif file.end_with? '.js'
+      @assets.join('javascripts', file)
+    else
+      @assets.join('images', file)
     end
   end
 
-  private
+  def version_file
+    @version ||= Pathname(__FILE__).dirname.join('version.rb')
+  end
 
-  def fetch_tags
+  def github_tags(repo)
     http = HTTPClient.new
-    body = http.get("https://api.github.com/repos/#{REPO}/tags").body
+    body = http.get("https://api.github.com/repos/#{repo}/tags").body
     response = JSON.parse(body)
     response.map { |tag| Gem::Version.new(tag['name']) }.sort
+  end
+
+  def get(url, to)
+    to.open('w') do |io|
+      http = HTTPClient.new
+      http.transparent_gzip_decompression = true
+      io << http.get(url).body
+    end
   end
 end
