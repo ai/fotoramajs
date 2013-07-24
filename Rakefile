@@ -15,3 +15,8 @@ task :update do
 
   puts "Updated"
 end
+
+desc 'Delete all generated files'
+task :clobber do
+  rm_r 'pkg' rescue nil
+end
