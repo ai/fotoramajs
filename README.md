@@ -40,7 +40,7 @@ Fotorama is created and maintained by [Artem Polikarpov].
 6. Use Fotorama by [documentation].
 
 [jquery-rails-cdn]: https://github.com/kenn/jquery-rails-cdn
-[documentation]:    http://fotorama.io/use/
+[documentation]:    http://fotorama.io/customize/
 
 ## Development
 
