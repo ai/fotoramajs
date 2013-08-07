@@ -23,7 +23,8 @@ class Updater
   def fetch(tag)
     cdn = "http://fotorama.s3.amazonaws.com/#{tag}"
     %w(fotorama.js fotorama.css fotorama.png fotorama@2x.png).each do |file|
-      get "#{cdn}/#{file}", asset(file)
+      from = "#{cdn}/#{file}".sub(/(.css|.js)$/, '.uncompressed\\1')
+      get from, asset(file)
     end
   end
 
