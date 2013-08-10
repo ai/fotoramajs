@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fotoramajs (4.2.3)
+    fotoramajs (4.3.0)
       jquery-rails (>= 2.1.0)
       sprockets (>= 2)
 
