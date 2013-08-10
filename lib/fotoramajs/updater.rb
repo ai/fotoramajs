@@ -39,7 +39,7 @@ class Updater
     scss = asset('fotorama.css.scss')
 
     scss.open('w') do |io|
-      io << css.read.gsub(/url\(([^\)]+)\)/, 'image-url("\1")')
+      io << css.read.gsub(/url\(/, 'image-url(')
     end
 
     css.delete

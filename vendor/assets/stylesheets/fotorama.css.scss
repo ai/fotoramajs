@@ -154,7 +154,7 @@
 .fotorama__fullscreen-icon,
 .fotorama__video-play,
 .fotorama__video-close {
-  background: image-url(""fotorama.png"") no-repeat;
+  background: image-url("fotorama.png") no-repeat;
 }
 
 @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
@@ -162,7 +162,7 @@
   .fotorama__fullscreen-icon,
   .fotorama__video-play,
   .fotorama__video-close {
-    background: image-url(""fotorama@2x.png"") no-repeat;
+    background: image-url("fotorama@2x.png") no-repeat;
     background-size: 96px 160px;
   }
 }
