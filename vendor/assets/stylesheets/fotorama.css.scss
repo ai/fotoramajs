@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.3.0 | http://fotorama.io/license/
+ * Fotorama 4.3.3 | http://fotorama.io/license/
  */
 .fotorama__stage__shaft,
 .fotorama__stage__frame,
@@ -12,6 +12,18 @@
   right: 0;
   left: 0;
   bottom: 0;
+}
+
+.fotorama--fullscreen,
+.fotorama__img {
+  max-width: 99999px !important;
+  max-height: 99999px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0;
+  margin: 0;
 }
 
 .fotorama__wrap .fotorama__grab {
@@ -72,9 +84,9 @@
 .fotorama__wrap--css3 .fotorama__stage__shaft,
 .fotorama__wrap--css3 .fotorama__nav__shaft,
 .fotorama__wrap--css3 .fotorama__thumb-border {
-  -webkit-transition-property: -webkit-transform;
-  transition-property: -ms-transform;
-  transition-property: transform;
+  -webkit-transition-property: -webkit-transform, width;
+  transition-property: -ms-transform, width;
+  transition-property: transform, width;
   -webkit-transition-timing-function: cubic-bezier(0.1, 0, 0.25, 1);
   transition-timing-function: cubic-bezier(0.1, 0, 0.25, 1);
   -webkit-transition-duration: 0ms;
@@ -190,24 +202,23 @@
   height: 100% !important;
   max-width: 100% !important;
   max-height: 100% !important;
-  overflow: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
+  overflow: hidden !important;
   background: #000;
 }
 
 .fotorama--fullscreen {
-  position: absolute;
+  position: absolute !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
-  float: none;
-  z-index: 2147483647;
+  float: none !important;
+  z-index: 2147483647 !important;
   background: #000;
-  width: auto !important;
-  height: auto !important;
-  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .fotorama--fullscreen .fotorama__stage,
@@ -243,10 +254,6 @@
   -webkit-filter: alpha(opacity=0);
   filter: alpha(opacity=0);
   opacity: 0;
-  max-width: 99999px !important;
-  max-height: 99999px !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
 }
 
 .fotorama__loaded .fotorama__img,
@@ -395,6 +402,11 @@
   border: 1px solid;
 }
 
+.fotorama__nav__frame.fotorama__active {
+  pointer-events: none;
+  cursor: default;
+}
+
 .fotorama__nav__frame.fotorama__active .fotorama__dot {
   width: 6px;
   height: 6px;
@@ -454,6 +466,10 @@
   border-color: rgba(51, 51, 51, 0.5);
 }
 
+.fotorama__wrap--video .fotorama__caption {
+  display: none;
+}
+
 .fotorama__oooo {
   width: 6px;
   height: 6px;
@@ -489,6 +505,17 @@
   background-color: #7f7f7f;
 }
 
+.fotorama__wrap--css3 .fotorama__stage__shaft,
+.fotorama__wrap--css3 .fotorama__nav__shaft,
+.fotorama__wrap--css3 .fotorama__thumb-border,
+.fotorama__wrap--css3 .fotorama__stage__frame,
+.fotorama__wrap--css3 .fotorama__nav__frame,
+.fotorama__wrap--css3 .fotorama__img,
+.fotorama__wrap--css3 .fotorama__html,
+.fotorama__wrap--css3 .fotorama__caption {
+  -webkit-backface-visibility: hidden;
+}
+
 .fotorama__wrap--css3 .fotorama__img,
 .fotorama__wrap--css3 .fotorama__html,
 .fotorama__wrap--css3.fotorama__wrap--fade .fotorama__stage__frame,
@@ -497,8 +524,8 @@
   transition-property: opacity;
   -webkit-transition-timing-function: linear;
   transition-timing-function: linear;
-  -webkit-transition-duration: 300ms;
-  transition-duration: 300ms;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
 }
 
 .fotorama__select {
@@ -566,6 +593,7 @@
 }
 
 .fotorama__arr--disabled {
+  pointer-events: none;
   cursor: default;
   *display: none;
   -webkit-filter: alpha(opacity=0);
@@ -675,8 +703,10 @@
 .fotorama__wrap--css3 .fotorama__fullscreen-icon,
 .fotorama__wrap--css3 .fotorama__video-play,
 .fotorama__wrap--css3 .fotorama__video-close {
-  -webkit-transition: all 300ms;
-  transition: all 300ms;
+  -webkit-transition-property: top, right, left, opacity;
+  transition-property: top, right, left, opacity;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
 }
 
 .fotorama__stage:before,
@@ -692,6 +722,7 @@
   width: 10px;
   height: auto;
   z-index: 10;
+  pointer-events: none;
   background-repeat: no-repeat;
   background-size: 1px 100%, 5px 100%;
 }

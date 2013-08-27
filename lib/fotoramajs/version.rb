@@ -1,3 +1,3 @@
 module Fotoramajs
-  VERSION = "4.3.0.1"
+  VERSION = "4.3.3"
 end
