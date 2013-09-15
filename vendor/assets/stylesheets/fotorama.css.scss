@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.3.4.1 | http://fotorama.io/license/
+ * Fotorama 4.4.1 | http://fotorama.io/license/
  */
 .fotorama__stage__shaft,
 .fotorama__stage__frame,
@@ -23,7 +23,6 @@
   border-radius: 0 !important;
   box-shadow: none !important;
   padding: 0;
-  margin: 0;
 }
 
 .fotorama__wrap .fotorama__grab {
@@ -188,13 +187,12 @@
   overflow: hidden;
 }
 
-.fotorama > * {
-  visibility: hidden;
-}
-
-.fotorama.fotorama--noscript > *,
 .fotorama > .fotorama__wrap {
   visibility: visible;
+}
+
+.fotorama--hidden-before-ready > * {
+  visibility: hidden;
 }
 
 .fullscreen {
@@ -219,6 +217,7 @@
   background: #000;
   width: 100% !important;
   height: 100% !important;
+  margin: 0 !important;
 }
 
 .fotorama--fullscreen .fotorama__stage,
@@ -229,6 +228,10 @@
 .fotorama__wrap {
   -webkit-text-size-adjust: 100%;
   position: relative;
+}
+
+.fotorama__wrap--rtl .fotorama__stage__frame {
+  direction: rtl;
 }
 
 .fotorama__stage,
@@ -460,6 +463,11 @@
 
 .fotorama__wrap--video .fotorama__caption {
   display: none;
+}
+
+.fotorama__wrap--rtl .fotorama__caption {
+  left: auto;
+  right: 0;
 }
 
 .fotorama__oooo {
