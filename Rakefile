@@ -60,6 +60,10 @@ task :update do
     end
   end
 
+  def update_gemfile_lock
+    `#{Rake::DSL::RUBY} -S bundle`
+  end
+
   puts "Fetching tags"
   tag = github_tags('artpolikarpov/fotorama').last
 
@@ -71,6 +75,7 @@ task :update do
 
   puts "Update gem version"
   update_version(tag)
+  update_gemfile_lock
 
   puts "Done"
 end
