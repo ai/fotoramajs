@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.4.1 | http://fotorama.io/license/
+ * Fotorama 4.4.3 | http://fotorama.io/license/
  */
 .fotorama__stage__shaft,
 .fotorama__stage__frame,
@@ -22,7 +22,7 @@
   min-height: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  padding: 0;
+  padding: 0 !important;
 }
 
 .fotorama__wrap .fotorama__grab {
@@ -96,11 +96,7 @@
 .fotorama__arr,
 .fotorama__fullscreen-icon,
 .fotorama__video-play,
-.fotorama__video-close,
-.fotorama__stage:before,
-.fotorama__stage:after,
-.fotorama__nav:before,
-.fotorama__nav:after {
+.fotorama__video-close {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -228,6 +224,7 @@
 .fotorama__wrap {
   -webkit-text-size-adjust: 100%;
   position: relative;
+  direction: ltr;
 }
 
 .fotorama__wrap--rtl .fotorama__stage__frame {
@@ -305,7 +302,7 @@
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
   opacity: 0;
-  border: 0;
+  border: none !important;
 }
 
 .fotorama__loaded .fotorama__img,
@@ -486,7 +483,7 @@
   width: 6px;
   height: 6px;
   border-radius: 6px;
-  background-color: #bfbfbf;
+  background-color: #7f7f7f;
   background-color: rgba(127, 127, 127, 0.5);
 }
 
@@ -503,17 +500,6 @@
 .fotorama__oooo--3 .fotorama__oooo:before,
 .fotorama__oooo--4 .fotorama__oooo:after {
   background-color: #7f7f7f;
-}
-
-.fotorama__wrap--css3 .fotorama__stage__shaft,
-.fotorama__wrap--css3 .fotorama__nav__shaft,
-.fotorama__wrap--css3 .fotorama__thumb-border,
-.fotorama__wrap--css3 .fotorama__stage__frame,
-.fotorama__wrap--css3 .fotorama__nav__frame,
-.fotorama__wrap--css3 .fotorama__img,
-.fotorama__wrap--css3 .fotorama__html,
-.fotorama__wrap--css3 .fotorama__caption {
-  -webkit-backface-visibility: hidden;
 }
 
 .fotorama__wrap--css3 .fotorama__img,
@@ -540,6 +526,21 @@
   position: absolute;
   z-index: 10;
 }
+
+body,
+div,
+article,
+aside,
+footer,
+header,
+main,
+nav,
+section {
+  /* Force improvement of webkit mobile performance on sites using fotorama */
+  -webkit-backface-visibility: hidden;
+}
+
+/* Strange fix of the #66 issue (Firefox bug while sliding backwards) */
 
 @-moz-document url-prefix()  {
   .fotorama__active {

@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.4.1 | http://fotorama.io/license/
+ * Fotorama 4.4.3 | http://fotorama.io/license/
  */
 (function (window, document, location, $, undefined) {
   "use strict";
@@ -1061,7 +1061,7 @@ function touch ($el, options) {
         || (lastEvent && lastEvent.type !== e.type && preventEvent)
         || (targetIsSelectFLAG = options.select && $target.is(options.select, el))) return targetIsSelectFLAG;
 
-    touchFLAG = e.type.match(/^t/);
+    touchFLAG = e.type === 'touchstart';
     targetIsLinkFlag = $target.is('a, a *', el);
 
     extendEvent(e);
@@ -1091,7 +1091,7 @@ function touch ($el, options) {
     var xDiff = Math.abs(e._x - startEvent._x), // opt _x → _pageX
         yDiff = Math.abs(e._y - startEvent._y),
         xyDiff = xDiff - yDiff,
-        xWin = (tail.go || tail.x || xyDiff > 0) && !tail.noSwipe,
+        xWin = (tail.go || tail.x || xyDiff >= 0) && !tail.noSwipe,
         yWin = xyDiff < 0;
 
     if (touchFLAG && !tail.checked) {
@@ -1124,7 +1124,7 @@ function touch ($el, options) {
     preventEventTimeout = setTimeout(function () {
       preventEvent = false;
     }, 1000);
-    (options.onEnd || noop).call(el, {moved: tail.checked, $target: $target, control: controlTouch, touch: touchFLAG, startEvent: startEvent, aborted: !e});
+    (options.onEnd || noop).call(el, {moved: tail.checked, $target: $target, control: controlTouch, touch: touchFLAG, startEvent: startEvent, aborted: !e || e.type === 'MSPointerCancel'});
   }
 
   function onOtherStart () {
@@ -1322,7 +1322,7 @@ function moveOnTouch ($el, options) {
 
     time *= slowFLAG ? 10 : 1;
 
-    (options.onEnd || noop).call(el, $.extend(result, {pos: moveElPos, newPos: newPos, overPos: overPos, time: time, moved: longTouchFLAG ? snap : Math.abs(moveElPos - startElPos) > 3}));
+    (options.onEnd || noop).call(el, $.extend(result, {pos: moveElPos, newPos: newPos, overPos: overPos, time: time, moved: longTouchFLAG ? snap : Math.abs(moveElPos - startElPos) > (snap ? 0 : 3)}));
   }
 
   tail = $.extend(touch(options.$wrap, {
@@ -1339,7 +1339,7 @@ function wheel ($el, options) {
   var el = $el[0],
       lockFLAG,
       lastDirection,
-      /*unlockTimestamp,*/
+      lastNow,
       tail = {
         prevent: {}
       };
@@ -1349,25 +1349,26 @@ function wheel ($el, options) {
         xDelta = e.wheelDeltaX || -1 * e.deltaX || 0,
         xWin = Math.abs(xDelta) > Math.abs(yDelta),
         direction = getDirectionSign(xDelta < 0),
-        sameDirection = lastDirection === direction;
-
-    //console.log('direction', direction);
-    //console.log('lastDirection', lastDirection);
+        sameDirection = lastDirection === direction,
+        now = $.now(),
+        tooFast = now - lastNow < TOUCH_TIMEOUT;
 
     lastDirection = direction;
+    lastNow = now;
 
     if (!xWin || !tail.ok || tail.prevent[direction] && !lockFLAG) {
       return;
     } else {
       stopEvent(e, true);
-      if (lockFLAG && sameDirection /*|| $.now() - unlockTimestamp < TOUCH_TIMEOUT / 2*/) return;
+      if (lockFLAG && sameDirection && tooFast) {
+        return;
+      }
     }
 
     if (options.shift) {
       lockFLAG = true;
       clearTimeout(tail.t);
       tail.t = setTimeout(function () {
-        //unlockTimestamp = $.now();
         lockFLAG = false;
       }, SCROLL_LOCK_TIMEOUT);
     }
@@ -1399,7 +1400,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
       $wrap = $(div(wrapClass)),
       $stage = $(div(stageClass)).appendTo($wrap),
       stage = $stage[0],
-      
+
       $stageShaft = $(div(stageShaftClass)).appendTo($stage),
       $stageFrame = $(),
       $arrPrev = $(div(arrClass + ' ' + arrPrevClass, div(arrArrClass))),
@@ -1710,9 +1711,6 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
     ooooStop();
 
-    // Glimpse
-    $stageShaft.css({left: opts.glimpse, right: opts.glimpse, width: 'auto'});
-
     $wrap
         .addClass(classes.add.join(' '))
         .removeClass(classes.remove.join(' '));
@@ -2009,6 +2007,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
       toDetach[STAGE_FRAME_KEY][normalizeIndex(index)] = $frame.css($.extend({left: o_fade ? 0 : getPosByIndex(index, measures.w, opts.margin, repositionIndex)}, o_fade && getDuration(0)));
 
       if (isDetached($frame[0])) {
+        //console.log('Append', normalizeIndex(index));
         $frame.appendTo($stageShaft);
         unloadVideo(dataFrame.$video);
       }
@@ -2182,12 +2181,16 @@ jQuery.Fotorama = function ($fotorama, opts) {
   function detachFrames (key) {
     var _toDetach = toDetach[key];
 
+    //console.log('_toDetach', _toDetach);
+    //console.log('activeIndexes', activeIndexes);
+
     $.each(activeIndexes, function (i, index) {
-      delete _toDetach[index];
+      delete _toDetach[normalizeIndex(index)];
     });
 
     $.each(_toDetach, function (index, $frame) {
       delete _toDetach[index];
+      //console.log('Detach', index);
       $frame.detach();
     });
   }
@@ -2343,14 +2346,13 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
     that.activeFrame = activeFrame = data[activeIndex];
 
-    unloadVideo($videoPlaying, activeFrame.i !== data[normalizeIndex(repositionIndex)].i);
-
-    frameDraw(activeIndexes, 'stage');
-    stageFramePosition([dirtyIndex, getPrevIndex(dirtyIndex), getNextIndex(dirtyIndex)]);
-
-    updateTouchTails('go', true);
-
-    triggerEvent('show', options.direct);
+    //setTimeout(function () {
+      unloadVideo($videoPlaying, activeFrame.i !== data[normalizeIndex(repositionIndex)].i);
+      frameDraw(activeIndexes, 'stage');
+      stageFramePosition([dirtyIndex, getPrevIndex(dirtyIndex), getNextIndex(dirtyIndex)]);
+      updateTouchTails('go', true);
+      triggerEvent('show', options.direct);
+    //}, 0);
 
     var onEnd = that.show.onEnd = function (skipReposition) {
       if (onEnd.ok) return;
@@ -2509,7 +2511,9 @@ jQuery.Fotorama = function ($fotorama, opts) {
       width = measures.W = measures.w = $wrap.width();
 
       if (opts.glimpse) {
-        measures.w -= Math.round((numberFromPercent(opts.glimpse) / 100 * width || numberFromMeasure(opts.glimpse)) * 2);
+        // Glimpse
+        measures.w -= Math.round((numberFromPercent(opts.glimpse) / 100 * width || numberFromMeasure(opts.glimpse)) * 2)
+        $stageShaft.css({width: measures.w, marginLeft: (measures.W - measures.w) / 2});
       }
 
       //console.log('measures.W', measures.W);
@@ -2756,6 +2760,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
     onEnd: function (e, direction) {
       //console.log('wheel $stage onEnd', direction);
       onTouchStart();
+      onTouchEnd();
       that.show({index: direction, slow: e.altKey})
     }
   });
@@ -2764,6 +2769,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
     onEnd: function (e, direction) {
       //console.log('wheel $nav onEnd', direction);
       onTouchStart();
+      onTouchEnd();
       var newPos = stop($navShaft) + direction * .25;
       $navShaft.css(getTranslate(minMaxLimit(newPos, navShaftData.min, navShaftData.max)));
       o_shadows && setShadow($nav, findShadowEdge(newPos, navShaftData.min, navShaftData.max));
@@ -2907,6 +2913,7 @@ $.fn.fotorama = function (opts) {
                   height: null,
                   minheight: null,
                   maxheight: null,
+
                   ratio: null, // '16/9' || 500/333 || 1.5
 
                   margin: MARGIN,
@@ -2920,11 +2927,6 @@ $.fn.fotorama = function (opts) {
                   thumbmargin: MARGIN,
                   thumbborderwidth: MARGIN,
 
-                  arrows: true,
-                  click: true,
-                  swipe: true,
-                  trackpad: true,
-
                   allowfullscreen: false, // true || 'native'
 
                   fit: 'contain', // 'cover' || 'scaledown' || 'none'
@@ -2937,18 +2939,23 @@ $.fn.fotorama = function (opts) {
                   hash: false,
                   startindex: 0,
 
+                  loop: false,
+
                   autoplay: false,
                   stopautoplayontouch: true,
 
                   keyboard: false,
 
-                  loop: false,
+                  arrows: true,
+                  click: true,
+                  swipe: true,
+                  trackpad: true,
 
                   shuffle: false,
 
-                  shadows: true,
+                  direction: 'ltr', // 'rtl'
 
-                  direction: 'ltr' // 'rtl'
+                  shadows: true
                 },
                 window.fotoramaDefaults,
                 opts,
@@ -3007,7 +3014,7 @@ $.Fotorama.jst.video = function(v) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<div class="fotorama__video"><iframe src="';
- print((v.type == 'youtube' ? 'http://youtube.com/embed/' + v.id +'?autoplay=1' : v.type == 'vimeo' ? 'http://player.vimeo.com/video/' + v.id + '?autoplay=1&badge=0' : v.id)  + '&' + v.s) ;
+ print((v.type == 'youtube' ? 'http://youtube.com/embed/' + v.id +'?autoplay=1' : v.type == 'vimeo' ? 'http://player.vimeo.com/video/' + v.id + '?autoplay=1&badge=0' : v.id)  + (v.s ? '&' + v.s : '')) ;
 __p += '" frameborder="0" allowfullscreen></iframe></div>';
 return __p
 };
