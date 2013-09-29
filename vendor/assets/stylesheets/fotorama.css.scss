@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.4.3 | http://fotorama.io/license/
+ * Fotorama 4.4.4 | http://fotorama.io/license/
  */
 .fotorama__stage__shaft,
 .fotorama__stage__frame,
@@ -525,19 +525,6 @@
   left: 0;
   position: absolute;
   z-index: 10;
-}
-
-body,
-div,
-article,
-aside,
-footer,
-header,
-main,
-nav,
-section {
-  /* Force improvement of webkit mobile performance on sites using fotorama */
-  -webkit-backface-visibility: hidden;
 }
 
 /* Strange fix of the #66 issue (Firefox bug while sliding backwards) */

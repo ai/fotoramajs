@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.4.3 | http://fotorama.io/license/
+ * Fotorama 4.4.4 | http://fotorama.io/license/
  */
 (function (window, document, location, $, undefined) {
   "use strict";

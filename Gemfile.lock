@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fotoramajs (4.4.3)
+    fotoramajs (4.4.4)
       sprockets (>= 2)
 
 GEM
