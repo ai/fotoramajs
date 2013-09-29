@@ -15,8 +15,7 @@ Gem::Specification.new do |s|
                   'gallery.  This is a gem, that allow you to simple install ' +
                   'and maintain Fotorama in Rails Assets Pipeline.'
 
-  s.add_dependency 'sprockets',    '>= 2'
-  s.add_dependency 'jquery-rails', '>= 2.1.0'
+  s.add_dependency 'sprockets', '>= 2'
 
   s.files         = `git ls-files`.split("\n")
   s.require_path  = 'lib'
