@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.4.5 | http://fotorama.io/license/
+ * Fotorama 4.4.6 | http://fotorama.io/license/
  */
 .fotorama__stage__shaft,
 .fotorama__stage__frame,
@@ -59,15 +59,21 @@
 .fotorama__wrap--css3 .fotorama__stage__shaft,
 .fotorama__wrap--css3 .fotorama__nav__shaft,
 .fotorama__wrap--css3 .fotorama__thumb-border,
-.fotorama__arr,
+.fotorama__wrap--css3 .fotorama__arr,
+.fotorama__wrap--css3
 .fotorama__fullscreen-icon,
+.fotorama__wrap--css3
 .fotorama__video-play,
+.fotorama__wrap--css3
 .fotorama__video-close {
   -webkit-transform: translate3d(0, 0, 0);
   -ms-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }
 
+.fotorama__oooo,
+.fotorama__oooo:before,
+.fotorama__oooo:after,
 .fotorama__wrap--css3 .fotorama__stage,
 .fotorama__wrap--css3 .fotorama__nav,
 .fotorama__wrap--css3 .fotorama__stage__frame,
@@ -516,7 +522,7 @@
   background-color: #7f7f7f;
 }
 
-.fotorama__wrap--css3 .fotorama__img,
+.fotorama__wrap--css3 .fotorama__stage .fotorama__img,
 .fotorama__wrap--css3 .fotorama__html,
 .fotorama__wrap--css3 .fotorama__caption {
   -webkit-transition-property: opacity;
