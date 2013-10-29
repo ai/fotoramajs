@@ -67,17 +67,22 @@ task :update do
   puts "Fetching tags"
   tag = github_tags('artpolikarpov/fotorama').last
 
-  puts "Load Fotorama #{tag}"
-  fetch(tag)
+  require './lib/fotoramajs/version'
+  if tag.to_s == Fotoramajs::VERSION
+    puts "No releases, since #{ Fotoramajs::VERSION }"
+  else
+    puts "Load Fotorama #{tag}"
+    fetch(tag)
 
-  puts "Convert CSS to SCSS"
-  convert
+    puts "Convert CSS to SCSS"
+    convert
 
-  puts "Update gem version"
-  update_version(tag)
-  update_gemfile_lock
+    puts "Update gem version"
+    update_version(tag)
+    update_gemfile_lock
 
-  puts "Done"
+    puts "Done"
+  end
 end
 
 desc 'Delete all generated files'
