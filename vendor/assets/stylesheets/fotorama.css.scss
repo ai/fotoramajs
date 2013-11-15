@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.4.7 | http://fotorama.io/license/
+ * Fotorama 4.4.8 | http://fotorama.io/license/
  */
 .fotorama__stage__shaft,
 .fotorama__stage__frame,
@@ -71,10 +71,11 @@
   transform: translate3d(0, 0, 0);
 }
 
+.fotorama__wrap--css3 .fotorama__spinner,
 .fotorama__wrap--css3 .fotorama__stage,
 .fotorama__wrap--css3 .fotorama__nav,
 .fotorama__wrap--css3 .fotorama__stage__frame,
-.fotorama__wrap--css3 .fotorama__stage__frame .fotorama__img,
+.fotorama__wrap--css3 .fotorama__stage .fotorama__img,
 .fotorama__wrap--css3 .fotorama__html,
 .fotorama__wrap--css3 .fotorama__caption,
 .fotorama__stage:before,
@@ -469,6 +470,37 @@
   background-color: #fff;
   background-color: rgba(255, 255, 255, 0.9);
   padding: 5px 10px;
+}
+
+@-webkit-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0);
+    -ms-transform: rotate(0);
+    transform: rotate(0);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.fotorama__wrap--css3 .fotorama__spinner {
+  -webkit-animation: spinner 24s infinite linear;
+  animation: spinner 24s infinite linear;
 }
 
 .fotorama__wrap--css3 .fotorama__stage .fotorama__img,

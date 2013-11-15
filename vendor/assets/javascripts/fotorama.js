@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.4.7 | http://fotorama.io/license/
+ * Fotorama 4.4.8 | http://fotorama.io/license/
  */
 (function (window, document, location, $, undefined) {
   "use strict";
@@ -427,6 +427,11 @@ var Spinner,
       rotate: 15, // The rotation offset
       color: 'rgba(128, 128, 128, .75)',
       hwaccel: true
+    },
+    spinnerOverride = {
+      top: 'auto',
+      left: 'auto',
+      className: ''
     };
 
 (function(root, factory) {
@@ -1262,12 +1267,12 @@ function smartClick ($el, fn, _options) {
         (_options.onStart || noop).call(this, e);
       },
       onMove: _options.onMove || noop,
+      onTouchEnd: _options.onTouchEnd || noop,
       onEnd: function (result) {
         if (result.moved || _options.tail.checked) return;
         fn.call(this, startEvent);
       }
     }), _options.tail);
-
   });
 }
 
@@ -1461,6 +1466,7 @@ function touch ($el, options) {
         || moveEventType !== e.type
         || !touchEnabledFLAG) {
       touchEnabledFLAG && onEnd();
+      (options.onTouchEnd || noop)();
       return;
     }
 
@@ -1487,6 +1493,9 @@ function touch ($el, options) {
 
   function onEnd (e) {
     ////console.time('touch.js onEnd');
+
+    (options.onTouchEnd || noop)();
+
     var _touchEnabledFLAG = touchEnabledFLAG;
     tail.control = touchEnabledFLAG = false;
 
@@ -1710,6 +1719,7 @@ function moveOnTouch ($el, options) {
   tail = $.extend(touch(options.$wrap, {
     onStart: onStart,
     onMove: onMove,
+    onTouchEnd: options.onTouchEnd,
     onEnd: onEnd,
     select: options.select,
     control: options.control
@@ -1871,8 +1881,6 @@ jQuery.Fotorama = function ($fotorama, opts) {
   toDeactivate[NAV_DOT_FRAME_KEY] = [];
   toDetach[STAGE_FRAME_KEY] = {};
 
-  that.prevent = {};
-
   $wrap.addClass(CSS3 ? wrapCss3Class : wrapCss2Class);
 
   fotoramaData.fotorama = this;
@@ -2021,7 +2029,8 @@ jQuery.Fotorama = function ($fotorama, opts) {
       $arrs.hide();
     }
 
-    spinner = new Spinner($.extend(spinnerDefaults, opts.spinner));
+    spinnerStop();
+    spinner = new Spinner($.extend(spinnerDefaults, opts.spinner, spinnerOverride, {direction: o_rtl ? -1 : 1}));
 
     arrsUpdate();
     stageWheelUpdate();
@@ -2091,8 +2100,6 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
     o_shadows = opts.shadows && !SLOW;
     classes[addOrRemove(!o_shadows)].push(wrapNoShadowsClass);
-
-    spinnerStop();
 
     $wrap
         .addClass(classes.add.join(' '))
@@ -2222,7 +2229,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
           frameData.state = 'error';
 
-          if (size > 1 && !dataFrame.html && !dataFrame.deleted && !dataFrame.video && !fullFLAG) {
+          if (size > 1 && data[index] === dataFrame && !dataFrame.html && !dataFrame.deleted && !dataFrame.video && !fullFLAG) {
             dataFrame.deleted = true;
             that.splice(index, 1);
           }
@@ -2307,7 +2314,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
   function spinnerStop () {
     $spinner.detach();
-    spinner.stop();
+    spinner && spinner.stop();
   }
 
   function updateFotoramaState () {
@@ -2606,13 +2613,8 @@ jQuery.Fotorama = function ($fotorama, opts) {
     });
   }
 
-  function triggerEvent (event, extra, fn) {
+  function triggerEvent (event, extra) {
     $fotorama.trigger(_fotoramaClass + ':' + event, [that, extra]);
-    if (!that.prevent[event]) {
-      (fn || noop)();
-    } else {
-     delete that.prevent[event];
-    }
   }
 
   function onTouchStart () {
@@ -3077,13 +3079,11 @@ jQuery.Fotorama = function ($fotorama, opts) {
     } else if ($videoPlaying) {
       target === videoClose && unloadVideo($videoPlaying, true, true);
     } else {
-      triggerEvent('stagetap', undefined, function () {
-        if (toggleControlsFLAG) {
-          toggleControlsClass();
-        } else if (opts.click) {
-          that.show({index: e.shiftKey || getDirectionSign(getDirection(e._x)), slow: e.altKey, user: true});
-        }
-      });
+      if (toggleControlsFLAG) {
+        toggleControlsClass();
+      } else if (opts.click) {
+        that.show({index: e.shiftKey || getDirectionSign(getDirection(e._x)), slow: e.altKey, user: true});
+      }
     }
     ////console.timeEnd('onStageTap');
   }
@@ -3097,11 +3097,10 @@ jQuery.Fotorama = function ($fotorama, opts) {
     onMove: function (e, result) {
       setShadow($stage, result.edge);
     },
+    onTouchEnd: onTouchEnd,
     onEnd: function (result) {
       ////console.time('stageShaftTouchTail.onEnd');
       setShadow($stage);
-
-      onTouchEnd();
 
       var toggleControlsFLAG = (MS_POINTER && !hoverFLAG || result.touch) && opts.arrows;
 
@@ -3134,9 +3133,8 @@ jQuery.Fotorama = function ($fotorama, opts) {
     onMove: function (e, result) {
       setShadow($nav, result.edge);
     },
+    onTouchEnd: onTouchEnd,
     onEnd: function (result) {
-      onTouchEnd();
-
       function onEnd () {
         slideNavShaft.l = result.newPos;
         releaseAutoplay();
@@ -3214,17 +3212,13 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
   smartClick($arrs, function (e) {
     stopEvent(e);
-    if ($videoPlaying) {
-      unloadVideo($videoPlaying, true, true);
-    } else {
-      onTouchEnd();
-      that.show({index: $arrs.index(this) ? '>' : '<', slow: e.altKey, user: true});
-    }
+    that.show({index: $arrs.index(this) ? '>' : '<', slow: e.altKey, user: true});
   }, {
     onStart: function () {
       onTouchStart();
       stageShaftTouchTail.control = true;
     },
+    onTouchEnd: onTouchEnd,
     tail: stageShaftTouchTail
   });
 
@@ -3366,7 +3360,8 @@ $.fn.fotorama = function (opts) {
 
                   direction: 'ltr', // 'rtl'
 
-                  shadows: true
+                  shadows: true,
+                  spinner: null
                 },
                 window.fotoramaDefaults,
                 opts,
