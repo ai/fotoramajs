@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.4.8 | http://fotorama.io/license/
+ * Fotorama 4.4.9 | http://fotorama.io/license/
  */
 .fotorama__stage__shaft,
 .fotorama__stage__frame,
@@ -254,6 +254,7 @@
 .fotorama__nav {
   overflow: hidden;
   position: relative;
+  max-width: 100%;
 }
 
 .fotorama__wrap--pan-y {
@@ -330,11 +331,16 @@
   display: block;
 }
 
-.fotorama__stage--only-active .fotorama__stage__frame {
+.fotorama__wrap--only-active .fotorama__stage,
+.fotorama__wrap--only-active .fotorama__nav {
+  max-width: 99999px !important;
+}
+
+.fotorama__wrap--only-active .fotorama__stage__frame {
   visibility: hidden;
 }
 
-.fotorama__stage--only-active .fotorama__stage__frame.fotorama__active {
+.fotorama__wrap--only-active .fotorama__stage__frame.fotorama__active {
   visibility: visible;
 }
 
