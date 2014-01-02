@@ -1,4 +1,4 @@
-require_relative 'lib/fotoramajs/version'
+require File.expand_path('../lib/fotoramajs/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
