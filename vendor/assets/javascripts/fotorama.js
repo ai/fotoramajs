@@ -1,5 +1,5 @@
 /*!
- * Fotorama 4.5.0 | http://fotorama.io/license/
+ * Fotorama 4.5.1 | http://fotorama.io/license/
  */
 (function (window, document, location, $, undefined) {
   "use strict";
@@ -17,6 +17,8 @@ var _fotoramaClass = 'fotorama',
     wrapPanYClass = wrapClass + '--pan-y',
     wrapRtlClass = wrapClass + '--rtl',
     wrapOnlyActiveClass = wrapClass + '--only-active',
+    wrapNoCaptionsClass = wrapClass + '--no-captions',
+    wrapToggleArrowsClass = wrapClass + '--toggle-arrows',
 
     stageClass = _fotoramaClass + '__stage',
     stageFrameClass = stageClass + '__frame',
@@ -361,8 +363,7 @@ var Modernizr = (function (window, document, undefined) {
 
   return Modernizr;
 })(window, document);
-var
-    fullScreenApi = {
+var fullScreenApi = {
       ok: false,
       is: function () {
         return false;
@@ -868,7 +869,75 @@ var $WINDOW = $(window),
     NAV_DOT_FRAME_KEY = '$navDotFrame',
     NAV_THUMB_FRAME_KEY = '$navThumbFrame',
 
-    BEZIER = bez([.1, 0, .25, 1]);
+    BEZIER = bez([.1, 0, .25, 1]),
+
+    MAX_WIDTH = 99999,
+
+    OPTIONS = {
+      // dimensions
+      width: null, // 500 || '100%'
+      minwidth: null,
+      maxwidth: '100%', // '100%'
+      height: null,
+      minheight: null,
+      maxheight: null,
+
+      ratio: null, // '16/9' || 500/333 || 1.5
+
+      margin: MARGIN,
+      glimpse: 0,
+
+      // navigation, thumbs
+      nav: 'dots', // 'thumbs' || false
+      navposition: 'bottom', // 'top'
+      navwidth: null,
+      thumbwidth: THUMB_SIZE,
+      thumbheight: THUMB_SIZE,
+      thumbmargin: MARGIN,
+      thumbborderwidth: MARGIN,
+
+      allowfullscreen: false, // true || 'native'
+
+      fit: 'contain', // 'cover' || 'scaledown' || 'none'
+
+      transition: 'slide', // 'crossfade' || 'dissolve'
+      clicktransition: null,
+      transitionduration: TRANSITION_DURATION,
+
+      captions: true,
+
+      hash: false,
+      startindex: 0,
+
+      loop: false,
+
+      autoplay: false,
+      stopautoplayontouch: true,
+
+      keyboard: false,
+
+      arrows: true,
+      click: true,
+      swipe: true,
+      trackpad: true,
+
+      shuffle: false,
+
+      direction: 'ltr', // 'rtl'
+
+      shadows: true,
+      spinner: null
+    },
+
+    KEYBOARD_OPTIONS = {
+      left: true,
+      right: true,
+      down: false,
+      up: false,
+      space: false,
+      home: false,
+      end: false
+    };
 function noop () {}
 
 function minMaxLimit (value, min, max) {
@@ -1866,6 +1935,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
       o_transition,
       o_shadows,
       o_rtl,
+      o_keyboard,
       lastOptions = {},
 
       measures = {},
@@ -1929,6 +1999,10 @@ jQuery.Fotorama = function ($fotorama, opts) {
     });
   }
 
+  function allowKey (key) {
+    return o_keyboard[key] || that.fullScreen;
+  }
+
   function bindGlobalEvents (FLAG) {
     var keydownCommon = 'keydown.' + _fotoramaClass,
         keydownLocal = 'keydown.' + _fotoramaClass + stamp,
@@ -1937,21 +2011,29 @@ jQuery.Fotorama = function ($fotorama, opts) {
     if (FLAG) {
       $DOCUMENT
           .on(keydownLocal, function (e) {
+            var catched,
+                index;
+
             if ($videoPlaying && e.keyCode === 27) {
-              stopEvent(e);
+              catched = true;
               unloadVideo($videoPlaying, true, true);
             } else if (that.fullScreen || (opts.keyboard && !that.index)) {
               if (e.keyCode === 27) {
-                stopEvent(e);
+                catched = true;
                 that.cancelFullScreen();
-              } else if (e.keyCode === 39 || (e.keyCode === 40 && that.fullScreen)) {
-                stopEvent(e);
-                that.show({index: '>', slow: e.altKey, user: true});
-              } else if (e.keyCode === 37 || (e.keyCode === 38 && that.fullScreen)) {
-                stopEvent(e);
-                that.show({index: '<', slow: e.altKey, user: true});
+              } else if ((e.shiftKey && e.keyCode === 32 && allowKey('space')) || (e.keyCode === 37 && allowKey('left')) || (e.keyCode === 38 && allowKey('up'))) {
+                index = '<';
+              } else if ((e.keyCode === 32 && allowKey('space')) || (e.keyCode === 39 && allowKey('right')) || (e.keyCode === 40 && allowKey('down'))) {
+                index = '>';
+              } else if (e.keyCode === 36 && allowKey('home')) {
+                index = '<<';
+              } else if (e.keyCode === 35 && allowKey('end')) {
+                index = '>>';
               }
             }
+
+            (catched || index) && stopEvent(e);
+            index && that.show({index: index, slow: e.altKey, user: true});
           });
 
       if (!that.index) {
@@ -2023,32 +2105,34 @@ jQuery.Fotorama = function ($fotorama, opts) {
     opts.autoplay = Math.max(+interval || AUTOPLAY_INTERVAL, o_transitionDuration * 1.5);
   }
 
-  function addOrRemove (FLAG) {
-    return FLAG ? 'add' : 'remove';
-  }
-
   /**
    * Options on the fly
    * */
   function setOptions () {
     that.options = opts = optionsToLowerCase(opts);
 
-    o_fade = opts.transition === 'crossfade' || opts.transition === 'dissolve';
+    o_fade = (opts.transition === 'crossfade' || opts.transition === 'dissolve');
 
-    o_loop = opts.loop && (size > 2 || o_fade);
+    o_loop = opts.loop && (size > 2 || o_fade) && (!o_transition || o_transition !== 'slide');
 
     o_transitionDuration = +opts.transitionduration || TRANSITION_DURATION;
 
     o_rtl = opts.direction === 'rtl';
 
+    o_keyboard = $.extend({}, opts.keyboard && KEYBOARD_OPTIONS, opts.keyboard);
+
     var classes = {add: [], remove: []};
+
+    function addOrRemoveClass (FLAG, value) {
+      classes[FLAG ? 'add' : 'remove'].push(value);
+    }
 
     if (size > 1) {
       o_nav = opts.nav;
       o_navTop = opts.navposition === 'top';
       classes.remove.push(selectClass);
 
-      $arrs.toggle(opts.arrows);
+      $arrs.toggle(!!opts.arrows);
     } else {
       o_nav = false;
       $arrs.hide();
@@ -2069,7 +2153,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
     stageNoMove();
 
-    extendMeasures(opts, true);
+    extendMeasures(opts, [measures]);
 
     o_navThumbs = o_nav === 'thumbs';
 
@@ -2118,13 +2202,14 @@ jQuery.Fotorama = function ($fotorama, opts) {
       o_nativeFullScreen = false;
     }
 
-    classes[addOrRemove(o_fade)].push(wrapFadeClass);
-    classes[addOrRemove(!o_fade)].push(wrapSlideClass);
-
-    classes[addOrRemove(o_rtl)].push(wrapRtlClass);
+    addOrRemoveClass(o_fade, wrapFadeClass);
+    addOrRemoveClass(!o_fade, wrapSlideClass);
+    addOrRemoveClass(!opts.captions, wrapNoCaptionsClass);
+    addOrRemoveClass(o_rtl, wrapRtlClass);
+    addOrRemoveClass(opts.arrows !== 'always', wrapToggleArrowsClass);
 
     o_shadows = opts.shadows && !SLOW;
-    classes[addOrRemove(!o_shadows)].push(wrapNoShadowsClass);
+    addOrRemoveClass(!o_shadows, wrapNoShadowsClass);
 
     $wrap
         .addClass(classes.add.join(' '))
@@ -2617,24 +2702,21 @@ jQuery.Fotorama = function ($fotorama, opts) {
     }
   }
 
-  function extendMeasures (options, optsLeave) {
-    options && $.extend(measures, {
-      width: options.width || measures.width,
-      height: options.height,
-      minwidth: options.minwidth,
-      maxwidth: options.maxwidth,
-      minheight: options.minheight,
-      maxheight: options.maxheight,
-      ratio: getRatio(options.ratio)
-    })
-        && !optsLeave && $.extend(opts, {
-      width: measures.width,
-      height: measures.height,
-      minwidth: measures.minwidth,
-      maxwidth: measures.maxwidth,
-      minheight: measures.minheight,
-      maxheight: measures.maxheight,
-      ratio: measures.ratio
+  function extendMeasures (options, measuresArray) {
+    if (!options) return;
+
+    $.each(measuresArray, function (i, measures) {
+      if (!measures) return;
+
+      $.extend(measures, {
+        width: options.width || measures.width,
+        height: options.height,
+        minwidth: options.minwidth,
+        maxwidth: options.maxwidth,
+        minheight: options.minheight,
+        maxheight: options.maxheight,
+        ratio: getRatio(options.ratio)
+      })
     });
   }
 
@@ -2949,7 +3031,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
   that.resize = function (options) {
     if (!data) return this;
 
-    extendMeasures(!that.fullScreen ? optionsToLowerCase(options) : {width: '100%', maxwidth: null, minwidth: null, height: '100%', maxheight: null, minheight: null}, that.fullScreen);
+    extendMeasures(!that.fullScreen ? optionsToLowerCase(options) : {width: '100%', maxwidth: null, minwidth: null, height: '100%', maxheight: null, minheight: null}, [measures, that.fullScreen || opts]);
 
     var time = arguments[1] || 0,
         setFLAG = arguments[2],
@@ -2961,7 +3043,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
     if (measureIsValid(width)) {
       $wrap
           .addClass(wrapOnlyActiveClass)
-          .css({width: width, minWidth: measures.minwidth, maxWidth: measures.maxwidth});
+          .css({width: width, minWidth: measures.minwidth || 0, maxWidth: measures.maxwidth || MAX_WIDTH});
 
       width = measures.W = measures.w = $wrap.width();
       measures.nw = o_nav && numberFromWhatever(opts.navwidth, width) || width;
@@ -3173,7 +3255,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
       ////console.log('result', result);
 
-      var toggleControlsFLAG = (MS_POINTER && !hoverFLAG || result.touch) && opts.arrows;
+      var toggleControlsFLAG = (MS_POINTER && !hoverFLAG || result.touch) && opts.arrows && opts.arrows !== 'always';
 
       if (result.moved || (toggleControlsFLAG && result.pos !== result.newPos && !result.control)) {
         var index = getIndexByPos(result.newPos, measures.w, opts.margin, repositionIndex);
@@ -3382,61 +3464,7 @@ $.fn.fotorama = function (opts) {
              * 3. Defaults */
             $.extend(
                 {},
-                {
-                  // dimensions
-                  width: null, // 500 || '100%'
-                  minwidth: null,
-                  maxwidth: '100%', // '100%'
-                  height: null,
-                  minheight: null,
-                  maxheight: null,
-
-                  ratio: null, // '16/9' || 500/333 || 1.5
-
-                  margin: MARGIN,
-                  glimpse: 0,
-
-                  // navigation, thumbs
-                  nav: 'dots', // 'thumbs' || false
-                  navposition: 'bottom', // 'top'
-                  navwidth: null,
-                  thumbwidth: THUMB_SIZE,
-                  thumbheight: THUMB_SIZE,
-                  thumbmargin: MARGIN,
-                  thumbborderwidth: MARGIN,
-
-                  allowfullscreen: false, // true || 'native'
-
-                  fit: 'contain', // 'cover' || 'scaledown' || 'none'
-
-                  transition: 'slide', // 'crossfade' || 'dissolve'
-                  clicktransition: null,
-                  transitionduration: TRANSITION_DURATION,
-
-                  captions: true,
-
-                  hash: false,
-                  startindex: 0,
-
-                  loop: false,
-
-                  autoplay: false,
-                  stopautoplayontouch: true,
-
-                  keyboard: false,
-
-                  arrows: true,
-                  click: true,
-                  swipe: true,
-                  trackpad: true,
-
-                  shuffle: false,
-
-                  direction: 'ltr', // 'rtl'
-
-                  shadows: true,
-                  spinner: null
-                },
+                OPTIONS,
                 window.fotoramaDefaults,
                 opts,
                 fotoramaData
