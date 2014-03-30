@@ -10,8 +10,10 @@ task :update do
   def github_tags(repo)
     http = HTTPClient.new
     body = http.get("https://api.github.com/repos/#{repo}/tags").body
-    response = JSON.parse(body)
-    response.map { |tag| Gem::Version.new(tag['name']) }.sort
+    JSON.parse(body)
+      .reject { |tag| tag['name'] =~ /[^\d\.]/ }
+      .map    { |tag| Gem::Version.new(tag['name']) }
+      .sort
   end
 
   def get(url, to)
