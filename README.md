@@ -3,9 +3,10 @@
 [Fotorama] is a simple, stunning, powerful JavaScript gallery.
 
 This is packager, that allows you to simply install and maintain Fotorama
-by RubyGem in Rails Assets Pipeline.
+by RubyGem in Rails Assets Pipeline. In development it will use local copy
+and in production it will use CDN.
 
-Fotorama is created and maintained by [Artem Polikarpov].
+Fotorama was created and maintained by [Artem Polikarpov].
 
 [Fotorama]:         http://fotorama.io/
 [Artem Polikarpov]: http://artpolikarpov.ru/
@@ -24,23 +25,20 @@ Fotorama is created and maintained by [Artem Polikarpov].
    bundle install
    ```
 
-3. Include jQuery in your project. I recommend [jquery-rails-cdn].
-4. Include Fotorama script, for example, in `application.js.coffee`:
+3. Include jQuery in your project. I recommend [jquery-cdn]
+   or [jquery-rails-cdn].
+4. Put `include_fotorama` after jQuery script tag:
 
-   ```coffee
-   #= require fotorama
+   ```haml
+   head
+     = include_jquery
+     = include_fotorama
    ```
-
-5. Include Fotorama styles, for example, in `application.css.sass`:
-
-   ```coffee
-   @import 'fotorama'
-   ```
-
-6. Use Fotorama by [documentation].
+5. Use Fotorama by [documentation].
 
 [jquery-rails-cdn]: https://github.com/kenn/jquery-rails-cdn
 [documentation]:    http://fotorama.io/customize/
+[jquery-cdn]:       https://github.com/ai/jquery-cdn
 
 ## Development
 
