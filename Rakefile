@@ -37,10 +37,9 @@ task :update do
   end
 
   def fetch(tag)
-    cdn = "http://fotorama.s3.amazonaws.com/#{tag}"
+    cdn = "https://cdnjs.cloudflare.com/ajax/libs/fotorama/#{tag}"
     %w(fotorama.js fotorama.css fotorama.png fotorama@2x.png).each do |file|
-      from = "#{cdn}/#{file}".sub(/(.css|.js)$/, '.dev\\1')
-      get from, asset(file)
+      get "#{cdn}/#{file}", asset(file)
     end
   end
 
