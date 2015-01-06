@@ -48,7 +48,9 @@ task :update do
     scss = asset('fotorama.css.scss')
 
     scss.open('w') do |io|
-      io << css.read.gsub(/url\(/, 'image-url(')
+      io << css.read
+        .gsub(/url\(/, 'image-url(')
+        .gsub(/image-url\(([^'"][^\)]*)\)/, 'image-url("\1")')
     end
 
     css.delete
