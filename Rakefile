@@ -45,7 +45,7 @@ task :update do
 
   def convert
     css  = asset('fotorama.css')
-    scss = asset('fotorama.css.scss')
+    scss = asset('fotorama.scss')
 
     scss.open('w') do |io|
       io << css.read
